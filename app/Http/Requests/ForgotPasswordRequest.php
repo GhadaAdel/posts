@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Models\User;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Foundation\Http\FormRequest;
 
 class ForgotPasswordRequest extends FormRequest
 {
@@ -29,8 +30,14 @@ class ForgotPasswordRequest extends FormRequest
 
     public function sendResetLink()
     {
-        return Password::sendResetLink(
-            $this->only('email')
-        );
+        $user = User::where('email', $this->email)->first();
+
+        if (!$user) {
+            return response([
+                'message' => 'User not found.'
+            ], 404);
+        }
+
+        return Password::broker()->createToken($user);
     }
 }

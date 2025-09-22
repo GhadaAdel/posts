@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\RefreshTokenRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Support\Facades\Password;
@@ -34,7 +35,8 @@ class AuthController extends Controller
         if ($user) {
             return response([
                 'user' => new UserResource($user),
-                'token' => $user->createToken('auth_token')->plainTextToken,
+                'access_token' => $user->createToken('auth_token')->plainTextToken,
+                'refresh_token' => $user->createToken('refresh_token')->plainTextToken,
                 'message' => 'You are logged in successfully!'
             ]);
         }
@@ -55,19 +57,13 @@ class AuthController extends Controller
 
     public function forgotPassword(ForgotPasswordRequest $request)
     {
-        $status = $request->sendResetLink();
-
-        if ($status === Password::RESET_LINK_SENT) {
-            return response([
-                'message' => __($status)
-            ], 200);
-        }
+        $token = $request->sendResetLink();
 
         return response([
-            'message' => __($status)
-        ], 400);
+            'message' => 'Password reset token generated.',
+            'token' => $token
+        ], 200);
     }
-
     
     public function resetPassword(ResetPasswordRequest $request)
     {
@@ -82,5 +78,15 @@ class AuthController extends Controller
         return response([
             'message' => __($status)
         ], 400);
+    }
+
+    public function refresh(RefreshTokenRequest $request)
+    {
+        $data = $request->refresh();
+
+        return response([
+            ...$data,
+            'message' => 'Access token refreshed successfully.'
+        ]);
     }
 }
