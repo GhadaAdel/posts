@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Laravel\Sanctum\PersonalAccessToken;
+use App\Models\RefreshToken;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
@@ -32,15 +32,17 @@ class RefreshTokenRequest extends FormRequest
     {
         $tokenValue = $this->input('refresh_token');
 
-        $tokenModel = PersonalAccessToken::findToken($tokenValue);
+        $hashedToken = hash('sha256', $tokenValue);
 
-        if (!$tokenModel || $tokenModel->name !== 'refresh_token') {
+        $refreshToken = RefreshToken::where('token', $hashedToken)->first();
+
+        if (!$refreshToken || $refreshToken->isExpired()) {
             throw ValidationException::withMessages([
                 'refresh_token' => ['Invalid or expired refresh token.']
             ]);
         }
 
-        $user = $tokenModel->tokenable;
+        $user = $refreshToken->user;
 
         $user->tokens()->where('name', 'access_token')->delete();
 

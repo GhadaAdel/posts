@@ -17,8 +17,17 @@ class RefreshToken extends Model
         'expires_at'
     ];
 
+    protected $casts = [
+        'expires_at' => 'datetime'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function isExpired()
+    {
+        return $this->expires_at->isPast();
     }
 }
