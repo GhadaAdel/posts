@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Services\TokenService;
 use App\Http\Requests\LoginRequest;
-use App\Http\Requests\ForgotPasswordRequest;
-use App\Http\Requests\ResetPasswordRequest;
-use App\Http\Requests\RefreshTokenRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Support\Facades\Password;
+use App\Http\Requests\RefreshTokenRequest;
+use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\ForgotPasswordRequest;
 
 class AuthController extends Controller
 {
@@ -28,7 +29,7 @@ class AuthController extends Controller
         }
     }
 
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request, TokenService $tokenService)
     {
         $user = $request->login();
 
@@ -36,7 +37,7 @@ class AuthController extends Controller
             return response([
                 'user' => new UserResource($user),
                 'access_token' => $user->createToken('auth_token')->plainTextToken,
-                'refresh_token' => $user->createToken('refresh_token')->plainTextToken,
+                'refresh_token' => $tokenService->createRefreshToken($user),
                 'message' => 'You are logged in successfully!'
             ]);
         }

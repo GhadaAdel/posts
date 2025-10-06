@@ -23,9 +23,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('/posts', PostController::class);
-    Route::get('/user/{user}', [UserPostController::class, 'show']);
+    // Route::apiResource('/posts', PostController::class);
+    // Route::get('/user/{user}', [UserPostController::class, 'show']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', [UserController::class, 'show']);
+    Route::put('/user', [UserController::class, 'update']);
 });
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -33,5 +35,4 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/refresh', [AuthController::class, 'refresh']);
-Route::get('/user/{user}', [UserController::class, 'show']);
-Route::put('/user/{user}', [UserController::class, 'update']);
+
