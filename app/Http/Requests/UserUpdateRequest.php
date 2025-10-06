@@ -40,9 +40,9 @@ class UserUpdateRequest extends FormRequest
                 $data['password'] = Hash::make($this->input('password'));
             }
 
-            $this->user->update($data);
+            $this->user()->update($data);
 
-            return $this->user;
+            return $this->user();
         });
     }
 }
