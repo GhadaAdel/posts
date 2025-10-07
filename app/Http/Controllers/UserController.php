@@ -15,8 +15,10 @@ class UserController extends Controller
     public function show(Request $request)
     {
         return response([
+            'data' => [
+                'user' => UserResource::make($request->user())
+            ],
             'message' => 'Information of this user',
-            'user' => UserResource::make($request->user())
         ]);
     }
 
@@ -28,8 +30,10 @@ class UserController extends Controller
         $request->updateUser();
 
         return response([
+            'data' => [
+                'user' => UserResource::make($request->user())
+            ],
             'message' => 'This user is updated successfully!',
-            'user' => UserResource::make($request->user())
         ]);
     }
 }

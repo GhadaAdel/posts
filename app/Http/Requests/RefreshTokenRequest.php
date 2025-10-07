@@ -28,7 +28,7 @@ class RefreshTokenRequest extends FormRequest
         ];
     }
 
-    public function refresh(): array
+    public function refresh()
     {
         $tokenValue = $this->input('refresh_token');
 
@@ -47,9 +47,7 @@ class RefreshTokenRequest extends FormRequest
         $user->tokens()->where('name', 'access_token')->delete();
 
         $newAccessToken = $user->createToken('access_token')->plainTextToken;
-
-        return [
-            'access_token' => $newAccessToken
-        ];
+        
+        return $newAccessToken;
     }
 }
