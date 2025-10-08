@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Services\TokenService;
 use App\Http\Requests\LoginRequest;
-use App\Http\Requests\ForgotPasswordRequest;
-use App\Http\Requests\ResetPasswordRequest;
-use App\Http\Requests\RefreshTokenRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Support\Facades\Password;
+use App\Http\Requests\RefreshTokenRequest;
+use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\ForgotPasswordRequest;
 
 class AuthController extends Controller
 {
@@ -21,28 +20,32 @@ class AuthController extends Controller
 
         if ($user) {
             return response([
-                'user' => new UserResource($user),
-                'token' => $user->createToken('auth_token')->plainTextToken,
+                'data' => [
+                    'user' => new UserResource($user),
+                    'token' => $user->createToken('auth_token')->plainTextToken,
+                ],
                 'message' => 'You are registered successfully!',
             ]);
         }
     }
 
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request, TokenService $tokenService)
     {
         $user = $request->login();
 
         if ($user) {
             return response([
-                'user' => new UserResource($user),
-                'access_token' => $user->createToken('auth_token')->plainTextToken,
-                'refresh_token' => $user->createToken('refresh_token')->plainTextToken,
+                'data' => [
+                    'user' => new UserResource($user),
+                    'access_token' => $user->createToken('auth_token')->plainTextToken,
+                    'refresh_token' => $tokenService->createRefreshToken($user),
+                ],
                 'message' => 'You are logged in successfully!'
             ]);
         }
 
         return response([
-                'message' => 'The provided credentials are incorrect!'
+            'message' => 'The provided credentials are incorrect!'
         ], 401);
     }
 
@@ -60,8 +63,10 @@ class AuthController extends Controller
         $token = $request->sendResetLink();
 
         return response([
+            'data' => [
+                'token' => $token
+            ],
             'message' => 'Password reset token generated.',
-            'token' => $token
         ], 200);
     }
     
@@ -82,10 +87,12 @@ class AuthController extends Controller
 
     public function refresh(RefreshTokenRequest $request)
     {
-        $data = $request->refresh();
+        $refreshToken = $request->refresh();
 
         return response([
-            ...$data,
+            'data' => [
+                'refresh_token' => $refreshToken,
+            ],
             'message' => 'Access token refreshed successfully.'
         ]);
     }

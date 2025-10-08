@@ -12,24 +12,28 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(Request $request)
     {
         return response([
+            'data' => [
+                'user' => UserResource::make($request->user())
+            ],
             'message' => 'Information of this user',
-            'user' => UserResource::make($user)
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UserUpdateRequest $request, User $user)
+    public function update(UserUpdateRequest $request)
     {
         $request->updateUser();
 
         return response([
+            'data' => [
+                'user' => UserResource::make($request->user())
+            ],
             'message' => 'This user is updated successfully!',
-            'user' => UserResource::make($user)
         ]);
     }
 }
