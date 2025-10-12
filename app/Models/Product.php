@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Enums\ProductType;
+use App\Traits\FilterTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, FilterTrait;
 
     protected $fillable = [
         'name',

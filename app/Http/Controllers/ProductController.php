@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Filters\ProductFilters;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductCollection;
 
@@ -12,9 +13,9 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request, ProductFilters $filters)
     {
-        $products = Product::paginate($request->integer('per_page', 15));
+        $products = Product::filter($filters)->paginate($request->integer('per_page', 15));
         return new ProductCollection($products);
     }
 
