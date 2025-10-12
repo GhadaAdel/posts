@@ -13,7 +13,16 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $categories = Category::paginate($request->integer('per_page', 15));
+        $categories = Category::whereNull('parent_id')
+            ->paginate($request->integer('per_page', 15));
+        return new CategoryCollection($categories);
+    }
+
+    public function subCategories(Request $request)
+    {
+        $categories = Category::with('parent')
+            ->whereNotNull('parent_id')
+            ->paginate($request->integer('per_page', 15));
         return new CategoryCollection($categories);
     }
 
