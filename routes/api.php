@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProductController;
@@ -32,7 +33,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user', [UserController::class, 'update']);
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::get('/sub-categories', [CategoryController::class, 'subCategories']);
+    Route::get('/products', [ProductController::class, 'index']);
     Route::get('/product/{product}', [ProductController::class, 'show']);
+    Route::get('/brands', [BrandController::class, 'index']);
 });
 
 Route::post('/register', [AuthController::class, 'register']);

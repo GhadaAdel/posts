@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
+use App\Http\Resources\BrandResource;
+use App\Models\Brand;
 use Illuminate\Http\Request;
-use App\Http\Resources\ProductResource;
-use App\Http\Resources\ProductCollection;
 
-class ProductController extends Controller
+class BrandController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        $products = Product::paginate($request->integer('per_page', 15));
-        return new ProductCollection($products);
+        $brands = Brand::get();
+        return BrandResource::collection($brands);
     }
 
     /**
@@ -29,14 +28,9 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show(string $id)
     {
-        return response([
-            'data' => [
-                'product' => ProductResource::make($product),
-            ],
-            'message' => 'Details of the product'
-        ]);
+        //
     }
 
     /**
