@@ -32,6 +32,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
+        $product->load(['attributeValues.attribute']);
         return response([
             'data' => [
                 'product' => ProductResource::make($product),

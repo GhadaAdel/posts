@@ -24,7 +24,16 @@ class ProductResource extends JsonResource
             'price' => $this->price,
             'stock' => $this->stock,
             'type' => $this->type,
-            'is_active' => $this->is_active
+            'is_active' => $this->is_active,
+            'attributes' => $this->attributeValues
+                ->groupBy('attribute.name')
+                ->map(function ($values, $attributeName) {
+                    return [
+                        'attribute_name' => $attributeName,
+                        'values' => $values->pluck('value')->toArray(),
+                    ];
+                })
+                ->values()
         ];
     }
 }
